@@ -112,10 +112,11 @@ public class AccountService : IAccountService
    {
       var message =new BlazorRestMessage("/auth/login");
       message.Content=new JsonContent(loginDto);
+      message.Method = HttpMethod.Post;
       
-      var result = await _blazorRest.PostJsonAsync<LoginResponse>(message);
+      var result = await _blazorRest.SendAsync<LoginResponse>(message);
 
-      if (!result.IsSuccessFul)
+      if (!result.IsSuccessful)
       {
          //do somthing
       }    
@@ -135,8 +136,10 @@ public class AccountService : IAccountService
 public async Task UploadAvatarAsync(IBrowserFile ProfileImage)
 {
    var message = new BlazorRestMessage("/user/avatar");
-   message.Content = new FileContent(ProfileImage, "FileNameInFormData", HttpMethod.Post);     
-   var result = await _blazorRest.UploadFilesAsync(message);
+   message.Content = new FileContent(ProfileImage, "FileNameInFormData", HttpMethod.Post);    
+   message.Method = HttpMethod.Post;
+   
+   var result = await _blazorRest.SendAsync(message);
 }
 ```
 ### upload file with model
@@ -146,10 +149,11 @@ public async Task EditUserAsync(EditProfileDto editUserDto, IBrowserFile Profile
 {
     var message = new BlazorRestMessage("/user");
     message.Content = new FileWithModelContent(ProfileImage, nameof(ProfileImage), editUserDto, HttpMethod.Put);
-          
-    var result = await _blazorRest.UploadFileWithModelAsync<EditProfileResponse>(message);
+    message.Method = HttpMethod.Post;
+    
+    var result = await _blazorRest.SendAsync<EditProfileResponse>(message);
     //or
-    //var result = await _blazorRest.UploadFileWithModelAsync(message);
+    //var result = await _blazorRest.SendAsync(message);
 }
 ```
  
