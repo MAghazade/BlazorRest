@@ -5,7 +5,7 @@ namespace MA.BlazorRest.Src.Contracts
     /// <summary>
     /// Jwt Servie For  Auto Add Authoriztion Header or auto Refresh Token Silently
     /// </summary>
-    public interface IJwtTokenService
+    public interface IJwtService
     {
         /// <summary>
         /// 

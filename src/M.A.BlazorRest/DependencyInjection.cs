@@ -30,7 +30,7 @@ namespace MA.BlazorRest.Src
 
             if (serviceOptions.JwtTokenService is not null)
             {
-                services.AddScoped(typeof(IJwtTokenService), serviceOptions.JwtTokenService);
+                services.AddScoped(typeof(IJwtService), serviceOptions.JwtTokenService);
             }
 
             if (serviceOptions.RequestInterceptor is not null)

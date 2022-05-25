@@ -19,7 +19,7 @@ namespace MA.BlazorRest.Src.Core
         public BlazorRest(
                 HttpClient httpClient,
                 IOptions<BlazorRestOptions> options,
-                IJwtTokenService? jwt = default,
+                IJwtService? jwt = default,
                 IRequestInterceptor? requestInterceptor = default,
                 IResponseInterceptor? responseInterceptor = default,
                 IErrorInterceptor? errorInterceptor = default)

@@ -20,7 +20,7 @@ namespace MA.BlazorRest.Src
         /// </summary>
         /// <typeparam name="T"></typeparam>
         /// <returns></returns>
-        public BlazorRestOptions UseJwtService<T>( ) where T : IJwtTokenService
+        public BlazorRestOptions UseJwtService<T>( ) where T : IJwtService
         {
             JwtTokenService = typeof(T);
             return this;

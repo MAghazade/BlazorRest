@@ -21,7 +21,7 @@ namespace MA.BlazorRest.Src.Core
     {
         protected readonly HttpClient HttpClient;
         protected readonly JsonSerializerOptions JsonSerializerOptions;
-        private readonly IJwtTokenService? _jwt;
+        private readonly IJwtService? _jwt;
         private readonly IErrorInterceptor? _errorInterceptor;
         private readonly IResponseInterceptor? _responseInterceptor;
         private readonly IRequestInterceptor? _requestInterceptor;
@@ -29,7 +29,7 @@ namespace MA.BlazorRest.Src.Core
         public BaseBlazorRest(
              HttpClient httpClient,
              IOptions<BlazorRestOptions> options,
-             IJwtTokenService? jwt = default,
+             IJwtService? jwt = default,
              IRequestInterceptor? requestInterceptor = default,
              IResponseInterceptor? responseInterceptor = default,
             IErrorInterceptor? errorInterceptor = default)
