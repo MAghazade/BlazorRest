@@ -1,5 +1,5 @@
 <a href="https://www.nuget.org/packages/BlazorRest" rel="nofollow">
- <img src="https://i.postimg.cc/xdpCkXRk/blazorest1-1-0.png">
+ <img src="https://i.postimg.cc/2y8Kb9CL/nugetttt.png">
  </a>
 
 # BlazorRest
