@@ -90,6 +90,10 @@ builder.Services.AddBlazorRest(opt =>
     opt.UseRequestInterceptor<RequestInterceptor>();
     opt.UseResponseInterceptor<ResponseInterceptor>();
     opt.UseErrorInterceptor<ErrorInterceptor>();
+    opt.jsonSerializerOptions = new()
+    {
+        PropertyNameCaseInsensitive = true,
+    };
 });
 ```
 
