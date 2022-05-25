@@ -117,7 +117,7 @@ public class AccountService : IAccountService
       var message =new BlazorRestMessage("/auth/login")
       {
          Method = HttpMethod.Post,
-         Content=new JsonContent(loginDto)   
+         Content = new JsonContent(loginDto)   
       };
          
       var result = await _blazorRest.SendAsync<LoginResponse>(message);
@@ -146,8 +146,7 @@ public async Task UploadAvatarAsync(IBrowserFile ProfileImage)
       Method = HttpMethod.Post,
       Content = new FileContent(ProfileImage, "FileNameInFormData", HttpMethod.Post)
    };
-  
-   
+    
    var result = await _blazorRest.SendAsync(message);
 }
 ```
