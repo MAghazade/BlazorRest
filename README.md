@@ -144,7 +144,7 @@ public async Task UploadAvatarAsync(IBrowserFile ProfileImage)
    var message = new BlazorRestMessage("/user/avatar")
    { 
       Method = HttpMethod.Post,
-      Content = new FileContent(ProfileImage, "FileNameInFormData", HttpMethod.Post)
+      Content = new FileContent(ProfileImage, "FileNameInFormData")
    };
     
    var result = await _blazorRest.SendAsync(message);
