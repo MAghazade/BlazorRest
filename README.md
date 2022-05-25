@@ -90,6 +90,10 @@ builder.Services.AddBlazorRest(opt =>
     opt.UseRequestInterceptor<RequestInterceptor>();
     opt.UseResponseInterceptor<ResponseInterceptor>();
     opt.UseErrorInterceptor<ErrorInterceptor>();
+    opt.jsonSerializerOptions = new()
+    {
+        PropertyNameCaseInsensitive = true,
+    };
 });
 ```
 
@@ -110,12 +114,15 @@ public class AccountService : IAccountService
 
    public async Task Login(UserLoginDto loginDto)
    {
-      var message =new BlazorRestMessage("/auth/login");
-      message.Content=new JsonContent(loginDto);
-      
-      var result = await _blazorRest.PostJsonAsync<LoginResponse>(message);
+      var message =new BlazorRestMessage("/auth/login")
+      {
+         Method = HttpMethod.Post,
+         Content = new JsonContent(loginDto)   
+      };
+         
+      var result = await _blazorRest.SendAsync<LoginResponse>(message);
 
-      if (!result.IsSuccessFul)
+      if (!result.IsSuccessful)
       {
          //do somthing
       }    
@@ -134,9 +141,13 @@ public class AccountService : IAccountService
 ```cs
 public async Task UploadAvatarAsync(IBrowserFile ProfileImage)
 {
-   var message = new BlazorRestMessage("/user/avatar");
-   message.Content = new FileContent(ProfileImage, "FileNameInFormData", HttpMethod.Post);     
-   var result = await _blazorRest.UploadFilesAsync(message);
+   var message = new BlazorRestMessage("/user/avatar")
+   { 
+      Method = HttpMethod.Post,
+      Content = new FileContent(ProfileImage, "FileNameInFormData")
+   };
+    
+   var result = await _blazorRest.SendAsync(message);
 }
 ```
 ### upload file with model
@@ -144,12 +155,15 @@ public async Task UploadAvatarAsync(IBrowserFile ProfileImage)
 ```cs
 public async Task EditUserAsync(EditProfileDto editUserDto, IBrowserFile ProfileImage)
 {
-    var message = new BlazorRestMessage("/user");
-    message.Content = new FileWithModelContent(ProfileImage, nameof(ProfileImage), editUserDto, HttpMethod.Put);
-          
-    var result = await _blazorRest.UploadFileWithModelAsync<EditProfileResponse>(message);
+    var message = new BlazorRestMessage("/user")
+    {
+       Method = HttpMethod.Post,
+       Content = new FileWithModelContent(ProfileImage, nameof(ProfileImage), editUserDto)    
+    };
+    
+    var result = await _blazorRest.SendAsync<EditProfileResponse>(message);
     //or
-    //var result = await _blazorRest.UploadFileWithModelAsync(message);
+    //var result = await _blazorRest.SendAsync(message);
 }
 ```
  
