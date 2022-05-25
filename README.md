@@ -104,9 +104,9 @@ builder.Services.AddBlazorRest(opt =>
 public class AccountService : IAccountService
 {
    private readonly IBlazorRest _blazorRest;
-   private readonly IJwtTokenService _jwt;
+   private readonly IJwtService _jwt;
      
-   public AccountService(IJwtTokenService jwt,IBlazorRest blazorRest)
+   public AccountService(IJwtService jwt,IBlazorRest blazorRest)
    {
       _jwt = jwt;      
      _blazorRest = blazorRest;
