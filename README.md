@@ -47,7 +47,7 @@ And register the subclass that it has implemented ``IJwtTokenService`` interface
 builder.Services.AddBlazorRest(opt =>
 {
     opt.BaseUri = new Uri("http://localhost:54240");
-    opt.UseJwtService<JwtTokenService>();
+    opt.UseJwtService<JwtService>();//you can implement IJwtService and use like this
 });
 ```
 
