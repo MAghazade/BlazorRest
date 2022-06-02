@@ -16,7 +16,7 @@ using System.Linq;
 
 namespace MA.BlazorRest.Src.Core
 {
-   
+
     public abstract class BaseBlazorRest
     {
         protected readonly HttpClient HttpClient;
@@ -158,6 +158,12 @@ namespace MA.BlazorRest.Src.Core
                 httprequestMessage.AddJsonContent(messageContent, message.Encoding,
                     message.SerilizerOption ?? JsonSerializerOptions);
             }
+            else if (message.Content is FileWithModelContent fileWithModelContent)
+            {
+                if (fileWithModelContent?.Model is null) throw new Exception("Model Cannot Be Null Here!");
+
+                httprequestMessage.AddFilesWithModel(fileWithModelContent.Files, fileWithModelContent.Model);
+            }
             else if (message.Content is FileContent fileContent)
             {
                 if (fileContent is null) throw new Exception("fileContent Cannot Be Null Here!");
@@ -166,14 +172,7 @@ namespace MA.BlazorRest.Src.Core
 
                 httprequestMessage.AddFiles(fileContent.Files);
             }
-            else if (message.Content is FileWithModelContent fileWithModelContent)
-            {
-                if (fileWithModelContent?.Model is null) throw new Exception("Model Cannot Be Null Here!");
 
-                if (!fileWithModelContent.Files.Any()) throw new Exception("No files were added to the request");
-
-                httprequestMessage.AddFilesWithModel(fileWithModelContent.Files, fileWithModelContent.Model);
-            }
 
             return httprequestMessage.Build();
         }
