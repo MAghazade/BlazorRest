@@ -6,8 +6,8 @@ namespace MA.BlazorRest.Src.Responses
     public class BaseResponse
     {
         public bool IsSuccessful { get; set; }
-        public HttpStatusCode StatuseCode { get; set; }
-        public string Content { get; set; }
+        public HttpStatusCode? StatusCode { get; set; }
+        public string? Content { get; set; }
     }
 
     public class BaseResponse<T> : BaseResponse
