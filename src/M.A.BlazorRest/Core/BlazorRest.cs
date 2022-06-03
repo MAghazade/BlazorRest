@@ -1,20 +1,15 @@
 ﻿using MA.BlazorRest.Src.Contracts;
-using MA.BlazorRest.Src.Helpers;
 using MA.BlazorRest.Src.Interceptors;
-using MA.BlazorRest.Src.RequestContents;
 using MA.BlazorRest.Src.Responses;
 using Microsoft.Extensions.Options;
 using System;
-using System.IO;
-using System.Linq;
 using System.Net.Http;
-using System.Text.Json;
 using System.Threading;
 using System.Threading.Tasks;
 
 namespace MA.BlazorRest.Src.Core
 {
-    public class BlazorRest : BaseBlazorRest, IBlazorRest
+    internal class BlazorRest : BaseBlazorRest, IBlazorRest
     {
         public BlazorRest(
                 HttpClient httpClient,
@@ -23,11 +18,7 @@ namespace MA.BlazorRest.Src.Core
                 IRequestInterceptor? requestInterceptor = default,
                 IResponseInterceptor? responseInterceptor = default,
                 IErrorInterceptor? errorInterceptor = default)
-                : base(httpClient, options, jwt, requestInterceptor, responseInterceptor, errorInterceptor)
-        {
-
-
-        }
+                : base(httpClient, options, jwt, requestInterceptor, responseInterceptor, errorInterceptor) { }
         /// <summary>
         /// send http request with basic response type
         /// </summary>

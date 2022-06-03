@@ -10,7 +10,7 @@ namespace MA.BlazorRest.Src.Interceptors
         /// </summary>
         /// <param name="error"></param>
         /// <returns></returns>
-        Task IntercepteError(ErrorInterceptorModel? error);
+        Task InterceptError(ErrorInterceptorModel? error);
     }
 
 }

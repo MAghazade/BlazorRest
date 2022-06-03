@@ -102,7 +102,7 @@ namespace MA.BlazorRest.Src.Core
 
             if (_requestInterceptor is not null)
             {
-                httpRequestMessage = _requestInterceptor.IntercepteRequest(httpRequestMessage);
+                httpRequestMessage = _requestInterceptor.InterceptRequest(httpRequestMessage);
             }
 
             HttpResponseMessage? response = null;

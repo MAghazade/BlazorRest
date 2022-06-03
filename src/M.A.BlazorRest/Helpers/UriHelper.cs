@@ -13,8 +13,8 @@ namespace MA.BlazorRest.Src.Helpers
         /// <returns></returns>
         public static Uri GetFinalUri(IBlazorRestMessage message, System.Net.Http.HttpClient client)
         {
-            var uri = message.AbsoluteUrl is null && client.BaseAddress is not null
-                 ? new Uri(client.BaseAddress, message.RelativeUrl) : message.AbsoluteUrl;
+            var uri = message?.AbsoluteUrl is null && client.BaseAddress is not null
+                 ? new Uri(client.BaseAddress, message?.RelativeUrl) : message?.AbsoluteUrl;
 
             if (uri is null)
             {

@@ -9,7 +9,7 @@ namespace MA.BlazorRest.Src
         /// </summary>
         /// <param name="request"></param>
         /// <returns></returns>
-        HttpRequestMessage IntercepteRequest(HttpRequestMessage request);
+        HttpRequestMessage InterceptRequest(HttpRequestMessage request);
     }
 
 }
