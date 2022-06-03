@@ -1,5 +1,5 @@
 <a href="https://www.nuget.org/packages/BlazorRest" rel="nofollow">
- <img src="https://i.postimg.cc/xdpCkXRk/blazorest1-1-0.png">
+ <img src="https://i.postimg.cc/2y8Kb9CL/nugetttt.png">
  </a>
 
 # BlazorRest
@@ -28,9 +28,9 @@ builder.Services.AddBlazorRest(opt =>
 });
 ```
 If it is registered above, you can only send http requests without any other functionality
-But to send Bearer tokens automatically, you can implement the ‍‍‍‍``IJwtTokenService`` interface
+But to send Bearer tokens automatically, you can implement the ‍‍‍‍``IJwtService`` interface
 ```cs
-public interface IJwtTokenService
+public interface IJwtService
 {
    ValueTask SetTokenAsync(string? jwtToken);
 
@@ -47,7 +47,7 @@ And register the subclass that it has implemented ``IJwtTokenService`` interface
 builder.Services.AddBlazorRest(opt =>
 {
     opt.BaseUri = new Uri("http://localhost:54240");
-    opt.UseJwtService<JwtTokenService>();
+    opt.UseJwtService<JwtService>();//you can implement IJwtService and use like this
 });
 ```
 
@@ -86,7 +86,7 @@ public interface IErrorInterceptor
 builder.Services.AddBlazorRest(opt =>
 {
     opt.BaseUri = new Uri("http://localhost:54240");
-    opt.UseJwtService<JwtTokenService>();
+    opt.UseJwtService<JwtService>(); //you can implement IJwtService and use like this
     opt.UseRequestInterceptor<RequestInterceptor>();
     opt.UseResponseInterceptor<ResponseInterceptor>();
     opt.UseErrorInterceptor<ErrorInterceptor>();
@@ -104,9 +104,9 @@ builder.Services.AddBlazorRest(opt =>
 public class AccountService : IAccountService
 {
    private readonly IBlazorRest _blazorRest;
-   private readonly IJwtTokenService _jwt;
+   private readonly IJwtService _jwt;
      
-   public AccountService(IJwtTokenService jwt,IBlazorRest blazorRest)
+   public AccountService(IJwtService jwt,IBlazorRest blazorRest)
    {
       _jwt = jwt;      
      _blazorRest = blazorRest;
