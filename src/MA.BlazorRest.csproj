@@ -9,7 +9,7 @@
 		<PackageProjectUrl>https://github.com/MAghazade/BlazorRest</PackageProjectUrl>
 		<Title>BlazorRest</Title>
 		<Description>a library for sending http requests in Blazor WebAssembly in the simplest way</Description>
-		<Version>1.3.0</Version>
+		<Version>1.4.1</Version>
 		<RepositoryUrl>https://github.com/MAghazade/BlazorRest</RepositoryUrl>
 		<RepositoryType>git</RepositoryType>
 	</PropertyGroup>
