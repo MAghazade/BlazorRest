@@ -16,13 +16,12 @@ namespace MA.BlazorRest.Src.RequestContents
         /// <param name="file"></param>
         /// <param name="fileParameterName"></param>
         /// <exception cref="ArgumentNullException"></exception>
-        public FileContent(IBrowserFile file, string fileParameterName)
+        public FileContent(IBrowserFile? file, string? fileParameterName)
         {
-            if (file is null) throw new ArgumentNullException(nameof(file));
-
-            if (fileParameterName is null) throw new ArgumentNullException(nameof(fileParameterName));
-
-            Files.Add(fileParameterName, file);
+            if (file is not null && fileParameterName is not null)
+            {
+                Files.Add(fileParameterName, file);
+            }
         }
 
         /// <summary>
@@ -31,13 +30,12 @@ namespace MA.BlazorRest.Src.RequestContents
         /// <param name="files"></param>
         /// <exception cref="ArgumentNullException"></exception>
         /// <exception cref="Exception"></exception>
-        public FileContent(Dictionary<string, IBrowserFile> files)
+        public FileContent(Dictionary<string, IBrowserFile>? files)
         {
-            if (files is null) throw new ArgumentNullException(nameof(files));
-
-            if (!files.Any()) throw new Exception($"{nameof(files)} Is Empty!!");
-
-            Files = files;
+            if (files is not null && files.Any())
+            {
+                Files = files;
+            }
         }
     }
 }

@@ -25,11 +25,12 @@ namespace MA.BlazorRest.Src
             return this;
         }
 
-        /// <summary>
-        /// 
-        /// </summary>
-        /// <param name="method"></param>
-        /// <returns></returns>
+      /// <summary>
+      /// 
+      /// </summary>
+      /// <param name="httpMethod"></param>
+      /// <returns></returns>
+      /// <exception cref="ArgumentNullException"></exception>
         public HttpRequestMessageBuilder AddMethod(HttpMethod? httpMethod)
         {
             if (httpMethod is null) throw new ArgumentNullException(nameof(httpMethod));
@@ -129,14 +130,13 @@ namespace MA.BlazorRest.Src
             return this;
         }
 
-        /// <summary>
-        /// 
-        /// </summary>
-        /// <param name="file"></param>
-        /// <param name="fileNameInForm"></param>
-        /// <param name="model"></param>
-        /// <returns></returns>
-        public HttpRequestMessageBuilder AddFilesWithModel(Dictionary<string, IBrowserFile> files, object model)
+       /// <summary>
+       /// 
+       /// </summary>
+       /// <param name="files"></param>
+       /// <param name="model"></param>
+       /// <returns></returns>
+        public HttpRequestMessageBuilder AddFilesWithModel(Dictionary<string, IBrowserFile>? files, object model)
         {
             var requestContent = HttpMessageHelper.CreateMultiPartFormData(files);
 
@@ -146,10 +146,7 @@ namespace MA.BlazorRest.Src
             _httpRequestMessage.Content = requestContent;
             return this;
         }
-
-
-
-
+        
         /// <summary>
         /// 
         /// </summary>

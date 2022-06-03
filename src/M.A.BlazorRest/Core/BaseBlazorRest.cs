@@ -17,7 +17,7 @@ using System.Linq;
 namespace MA.BlazorRest.Src.Core
 {
 
-    public abstract class BaseBlazorRest
+    internal abstract class BaseBlazorRest
     {
         protected readonly HttpClient HttpClient;
         protected readonly JsonSerializerOptions JsonSerializerOptions;
@@ -26,7 +26,7 @@ namespace MA.BlazorRest.Src.Core
         private readonly IResponseInterceptor? _responseInterceptor;
         private readonly IRequestInterceptor? _requestInterceptor;
 
-        public BaseBlazorRest(
+        protected BaseBlazorRest(
              HttpClient httpClient,
              IOptions<BlazorRestOptions> options,
              IJwtService? jwt = default,
@@ -56,15 +56,24 @@ namespace MA.BlazorRest.Src.Core
         /// <param name="SerializerOptions"></param>
         /// <param name="cancellationToken"></param>
         /// <returns></returns>
-        protected async Task<BaseResponse<TResponse>> SendAsync<TResponse>(HttpRequestMessage httpRequestMessage, JsonSerializerOptions SerializerOptions, CancellationToken cancellationToken = default)
+        protected async Task<BaseResponse<TResponse>> SendAsync<TResponse>(HttpRequestMessage httpRequestMessage, JsonSerializerOptions? SerializerOptions, CancellationToken cancellationToken = default)
         {
             var response = await SendAsync(httpRequestMessage, cancellationToken);
-            var content = await response.Content.ReadAsStringAsync();
+
+            if (response is null)
+            {
+                return new BaseResponse<TResponse>()
+                {
+                    IsSuccessful = false
+                };
+            }
+
+            var content = await response.Content.ReadAsStringAsync(cancellationToken);
             var data = JsonSerializer.Deserialize<TResponse>(content, SerializerOptions ?? JsonSerializerOptions);
 
             return new BaseResponse<TResponse>()
             {
-                StatuseCode = response.StatusCode,
+                StatusCode = response.StatusCode,
                 IsSuccessful = response.StatusCode == HttpStatusCode.OK,
                 Data = data,
                 Content = content
@@ -78,7 +87,7 @@ namespace MA.BlazorRest.Src.Core
         /// <param name="httpRequestMessage"></param>
         /// <param name="cancellationToken"></param>
         /// <returns></returns>
-        protected async Task<HttpResponseMessage> SendAsync(HttpRequestMessage httpRequestMessage, CancellationToken cancellationToken = default)
+        protected async Task<HttpResponseMessage?> SendAsync(HttpRequestMessage httpRequestMessage, CancellationToken cancellationToken = default)
         {
             if (_jwt is not null)
             {
@@ -96,7 +105,29 @@ namespace MA.BlazorRest.Src.Core
                 httpRequestMessage = _requestInterceptor.IntercepteRequest(httpRequestMessage);
             }
 
-            var response = await HttpClient.SendAsync(httpRequestMessage, cancellationToken);
+            HttpResponseMessage? response = null;
+
+            try
+            {
+                response = await HttpClient.SendAsync(httpRequestMessage, cancellationToken);
+            }
+            catch (Exception e)
+            {
+                if (_errorInterceptor is not null)
+                {
+                    await _errorInterceptor.InterceptError(new ErrorInterceptorModel
+                    {
+                        Exception = e
+                    });
+                }
+                else
+                {
+                    throw;
+                }
+            }
+
+            if (response is null) return response;
+
 
             if (_responseInterceptor is not null)
             {
@@ -107,9 +138,9 @@ namespace MA.BlazorRest.Src.Core
             {
                 if (response.StatusCode != HttpStatusCode.OK)
                 {
-                    await _errorInterceptor.IntercepteError(new ErrorInterceptorModel
+                    await _errorInterceptor.InterceptError(new ErrorInterceptorModel
                     {
-                        Content = await response.Content.ReadAsStringAsync(),
+                        Content = await response.Content.ReadAsStringAsync(cancellationToken),
                         StatusCode = response.StatusCode
                     });
                 }
@@ -130,9 +161,9 @@ namespace MA.BlazorRest.Src.Core
 
             return new BaseResponse
             {
-                IsSuccessful = response.StatusCode is HttpStatusCode.OK,
-                StatuseCode = response.StatusCode,
-                Content = await response.Content.ReadAsStringAsync(),
+                IsSuccessful = response?.StatusCode is HttpStatusCode.OK,
+                StatusCode = response?.StatusCode,
+                Content = await response?.Content?.ReadAsStringAsync(cancellationToken)!,
             };
         }
 
@@ -145,7 +176,7 @@ namespace MA.BlazorRest.Src.Core
         /// <exception cref="Exception"></exception>
         protected HttpRequestMessage CreateMessage(IBlazorRestMessage message)
         {
-            var httprequestMessage = new HttpRequestMessageBuilder()
+            var httpRequestMessage = new HttpRequestMessageBuilder()
                .AddUri(UriHelper.GetFinalUri(message, HttpClient))
                .AddHeaders(message.Headers)
                .AddMethod(message.Method)
@@ -155,14 +186,14 @@ namespace MA.BlazorRest.Src.Core
             {
                 if (messageContent is null) throw new Exception("Content Cannot Be Null Here!");
 
-                httprequestMessage.AddJsonContent(messageContent, message.Encoding,
+                httpRequestMessage.AddJsonContent(messageContent, message.Encoding,
                     message.SerilizerOption ?? JsonSerializerOptions);
             }
             else if (message.Content is FileWithModelContent fileWithModelContent)
             {
                 if (fileWithModelContent?.Model is null) throw new Exception("Model Cannot Be Null Here!");
 
-                httprequestMessage.AddFilesWithModel(fileWithModelContent.Files, fileWithModelContent.Model);
+                httpRequestMessage.AddFilesWithModel(fileWithModelContent.Files, fileWithModelContent.Model);
             }
             else if (message.Content is FileContent fileContent)
             {
@@ -170,11 +201,11 @@ namespace MA.BlazorRest.Src.Core
 
                 if (!fileContent.Files.Any()) throw new Exception("No files were added to the request");
 
-                httprequestMessage.AddFiles(fileContent.Files);
+                httpRequestMessage.AddFiles(fileContent.Files);
             }
 
 
-            return httprequestMessage.Build();
+            return httpRequestMessage.Build();
         }
     }
 }
