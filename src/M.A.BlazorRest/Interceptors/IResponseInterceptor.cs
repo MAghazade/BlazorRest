@@ -9,6 +9,6 @@ namespace MA.BlazorRest.Src.Interceptors
         /// </summary>
         /// <param name="response"></param>
         /// <returns></returns>
-        HttpResponseMessage IntercepteResponse(HttpResponseMessage response);
+        HttpResponseMessage InterceptResponse(HttpResponseMessage response);
     }
 }

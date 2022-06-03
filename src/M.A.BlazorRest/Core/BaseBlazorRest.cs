@@ -131,7 +131,7 @@ namespace MA.BlazorRest.Src.Core
 
             if (_responseInterceptor is not null)
             {
-                response = _responseInterceptor.IntercepteResponse(response);
+                response = _responseInterceptor.InterceptResponse(response);
             }
 
             if (_errorInterceptor is not null)
