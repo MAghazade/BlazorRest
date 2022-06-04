@@ -56,7 +56,7 @@ implement the ‍‍‍‍‍‍``IRequestInterceptor`` interface To intercept r
 ```cs
 public interface IRequestInterceptor
 {       
-   HttpRequestMessage IntercepteRequest(HttpRequestMessage request);
+   HttpRequestMessage InterceptRequest(HttpRequestMessage request);
 }
 ```
 
@@ -65,7 +65,7 @@ public interface IRequestInterceptor
  ```cs
  public interface IResponseInterceptor
  {        
-   HttpResponseMessage IntercepteResponse(HttpResponseMessage response);
+   HttpResponseMessage InterceptResponse(HttpResponseMessage response);
  }
  ```
  
@@ -76,7 +76,7 @@ implement the ‍‍‍‍‍‍``IErrorInterceptor`` interface For Intercept re
 ```cs
 public interface IErrorInterceptor
 { 
-   Task IntercepteError(ErrorInterceptorModel? error);
+   Task InterceptError(ErrorInterceptorModel? error);
 }
 ```
  
