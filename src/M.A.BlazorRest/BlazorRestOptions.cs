@@ -32,7 +32,7 @@ namespace MA.BlazorRest.Src
         /// <returns></returns>
         public BlazorRestOptions UseErrorInterceptor<T>() where T : IErrorInterceptor
         {
-            RequestInterceptor = typeof(T);
+            ErrorInterceptor = typeof(T);
             return this;
         }
         /// <summary>
