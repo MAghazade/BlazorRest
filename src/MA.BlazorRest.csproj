@@ -1,4 +1,4 @@
-<Project Sdk="Microsoft.NET.Sdk">
+﻿<Project Sdk="Microsoft.NET.Sdk">
 
 	<PropertyGroup>
 		<TargetFrameworks>net6.0;net5.0</TargetFrameworks>
@@ -12,6 +12,7 @@
 		<Version>1.4.1</Version>
 		<RepositoryUrl>https://github.com/MAghazade/BlazorRest</RepositoryUrl>
 		<RepositoryType>git</RepositoryType>
+		<PackageIcon>icon.png</PackageIcon>
 	</PropertyGroup>
 
 	
@@ -27,7 +28,8 @@
 		<PackageReference Include="Microsoft.AspNetCore.Components.Web" Version="6.0.5" />
 	</ItemGroup>
 
-
-
+	<ItemGroup>
+		<None Include="M.A.BlazorRest/icon.png" Pack="true" PackagePath="\" />
+	</ItemGroup>
 
 </Project>
