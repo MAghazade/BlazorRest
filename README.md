@@ -127,12 +127,8 @@ public class AccountService : IAccountService
          //do somthing
       }    
            
-      if (result?.Data?.Token is null)
-      {
-         //do somthing
-      }  
        
-      await _jwt.SetTokenAsync(result?.Data?.Token);           
+      await _jwt.SetTokenAsync(result.Data.Token);           
   }
 }
 ```
