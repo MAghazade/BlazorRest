@@ -13,6 +13,7 @@
 		<RepositoryUrl>https://github.com/MAghazade/BlazorRest</RepositoryUrl>
 		<RepositoryType>git</RepositoryType>
 		<PackageIcon>icon.png</PackageIcon>
+		<PackageReadmeFile>README.md</PackageReadmeFile>		
 	</PropertyGroup>
 	
 	<ItemGroup Condition="'$(TargetFramework)' == 'net5.0' or '$(TargetFramework)' == 'net6.0' or '$(TargetFramework)' == 'net7.0'">
@@ -32,6 +33,10 @@
 	</ItemGroup>
 
 	<ItemGroup>
+		<None Include="..\README.md">
+		  <Pack>True</Pack>
+		  <PackagePath>\</PackagePath>
+		</None>
 		<None Include="M.A.BlazorRest/icon.png" Pack="true" PackagePath="\" />
 	</ItemGroup>
 
