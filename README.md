@@ -117,7 +117,7 @@ public class AccountService : IAccountService
       var message =new BlazorRestMessage("/auth/login")
       {
          Method = HttpMethod.Post,
-         Content = new JsonContent(loginDto)   
+         Content = new MA.BlazorRest.Src.RequestContents.JsonContent(loginDto)   
       };
          
       var result = await _blazorRest.SendAsync<LoginResponse>(message);
