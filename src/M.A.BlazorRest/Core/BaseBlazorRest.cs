@@ -176,36 +176,9 @@ namespace MA.BlazorRest.Src.Core
         /// <exception cref="Exception"></exception>
         protected HttpRequestMessage CreateMessage(IBlazorRestMessage message)
         {
-            var httpRequestMessage = new HttpRequestMessageBuilder()
-               .AddUri(UriHelper.GetFinalUri(message, HttpClient))
-               .AddHeaders(message.Headers)
-               .AddMethod(message.Method)
-               .AddQuery(message.QueryParmeters);
+            if (message is null) throw new ArgumentNullException(nameof(message));
 
-            if (message.Content is JsonContent messageContent)
-            {
-                if (messageContent is null) throw new Exception("Content Cannot Be Null Here!");
-
-                httpRequestMessage.AddJsonContent(messageContent, message.Encoding,
-                    message.SerilizerOption ?? JsonSerializerOptions);
-            }
-            else if (message.Content is FileWithModelContent fileWithModelContent)
-            {
-                if (fileWithModelContent?.Model is null) throw new Exception("Model Cannot Be Null Here!");
-
-                httpRequestMessage.AddFilesWithModel(fileWithModelContent.Files, fileWithModelContent.Model);
-            }
-            else if (message.Content is FileContent fileContent)
-            {
-                if (fileContent is null) throw new Exception("fileContent Cannot Be Null Here!");
-
-                if (!fileContent.Files.Any()) throw new Exception("No files were added to the request");
-
-                httpRequestMessage.AddFiles(fileContent.Files);
-            }
-
-
-            return httpRequestMessage.Build();
+            return HttpMessageHelper.CreateHttpRequestMessage(message, HttpClient, JsonSerializerOptions);
         }
     }
 }

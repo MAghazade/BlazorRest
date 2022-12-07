@@ -1,4 +1,6 @@
-﻿using Microsoft.AspNetCore.Components.Forms;
+﻿using MA.BlazorRest.Src.Core;
+using MA.BlazorRest.Src.RequestContents;
+using Microsoft.AspNetCore.Components.Forms;
 using System;
 using System.Collections.Generic;
 using System.Linq;
@@ -6,6 +8,8 @@ using System.Net.Http;
 using System.Net.Http.Headers;
 using System.Reflection;
 using System.Text;
+using System.Text.Json;
+using JsonContent = MA.BlazorRest.Src.RequestContents.JsonContent;
 
 namespace MA.BlazorRest.Src.Helpers
 {
@@ -55,6 +59,47 @@ namespace MA.BlazorRest.Src.Helpers
                 }
             }
             return form;
+        }
+
+        /// <summary>
+        /// Create HttpRequest Message
+        /// </summary>
+        /// <param name="message"></param>
+        /// <returns></returns>
+        /// <exception cref="Exception"></exception>
+        public static HttpRequestMessage CreateHttpRequestMessage(IBlazorRestMessage message, HttpClient httpClient, JsonSerializerOptions serializerOptions)
+        {
+            var httpRequestMessage = new HttpRequestMessageBuilder()
+               .AddUri(UriHelper.GetFinalUri(message, httpClient))
+               .AddHeaders(message.Headers)
+               .AddMethod(message.Method)
+               .AddQuery(message.QueryParmeters);
+
+            if (message.Content is JsonContent or FileContent and null)
+                throw new ArgumentException("Message Content Cannot be null !");
+
+            switch (message.Content)
+            {
+                case JsonContent messageContent:
+                    httpRequestMessage.AddJsonContent(messageContent, message.Encoding,
+                        message.SerilizerOption ?? serializerOptions);
+                    break;
+
+                case FileWithModelContent fileWithModelContent:
+                    if (fileWithModelContent.Model != null)
+                        _ = httpRequestMessage.AddFilesWithModel(fileWithModelContent.Files,
+                            model: fileWithModelContent.Model);
+                    break;
+
+                case FileContent fileContent when !fileContent.Files.Any():
+                    throw new Exception("No files were added to the request");
+
+                case FileContent fileContent:
+                    httpRequestMessage.AddFiles(fileContent.Files);
+                    break;
+            }
+
+            return httpRequestMessage.Build();
         }
     }
 }
