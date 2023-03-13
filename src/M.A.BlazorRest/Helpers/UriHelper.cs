@@ -23,5 +23,9 @@ namespace MA.BlazorRest.Src.Helpers
          
             return uri;
         }
+
+        public static bool IsAbsoluteUrl(string url)               
+            => Uri.TryCreate(url, UriKind.Absolute, out var result);
+        
     }
 }
