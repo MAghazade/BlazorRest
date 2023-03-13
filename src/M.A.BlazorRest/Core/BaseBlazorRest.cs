@@ -10,9 +10,8 @@ using System.Net.Http;
 using System.Threading;
 using Microsoft.Extensions.Options;
 using System;
-using MA.BlazorRest.Src.RequestContents;
 using MA.BlazorRest.Src.Helpers;
-using System.Linq;
+using MA.BlazorRest.M.A.BlazorRest.Responses;
 
 namespace MA.BlazorRest.Src.Core
 {
@@ -20,7 +19,6 @@ namespace MA.BlazorRest.Src.Core
     internal abstract class BaseBlazorRest
     {
         protected readonly HttpClient HttpClient;
-        protected readonly JsonSerializerOptions JsonSerializerOptions;
         private readonly IJwtService? _jwt;
         private readonly IErrorInterceptor? _errorInterceptor;
         private readonly IResponseInterceptor? _responseInterceptor;
@@ -38,8 +36,6 @@ namespace MA.BlazorRest.Src.Core
             {
                 throw new ArgumentNullException(nameof(options));
             }
-
-            JsonSerializerOptions = options.Value.jsonSerializerOptions;
             HttpClient = httpClient ?? throw new ArgumentNullException(nameof(httpClient));
             _jwt = jwt;
             _responseInterceptor = responseInterceptor;
@@ -49,14 +45,14 @@ namespace MA.BlazorRest.Src.Core
 
 
         /// <summary>
-        /// send http request
+        ///   send http request
         /// </summary>
         /// <typeparam name="TResponse"></typeparam>
         /// <param name="httpRequestMessage"></param>
-        /// <param name="SerializerOptions"></param>
+        /// <param name="responseOptions"></param>
         /// <param name="cancellationToken"></param>
         /// <returns></returns>
-        protected async Task<BaseResponse<TResponse>> SendAsync<TResponse>(HttpRequestMessage httpRequestMessage, JsonSerializerOptions? SerializerOptions, CancellationToken cancellationToken = default)
+        protected async Task<BaseResponse<TResponse>> SendAsync<TResponse>(HttpRequestMessage httpRequestMessage, ResponseOptions? responseOptions, CancellationToken cancellationToken = default)
         {
             var response = await SendAsync(httpRequestMessage, cancellationToken);
 
@@ -69,7 +65,8 @@ namespace MA.BlazorRest.Src.Core
             }
 
             var content = await response.Content.ReadAsStringAsync(cancellationToken);
-            var data = JsonSerializer.Deserialize<TResponse>(content, SerializerOptions ?? JsonSerializerOptions);
+            var data = JsonSerializer.Deserialize<TResponse>(content, responseOptions?.SerializerOptions ?? new());
+
 
             return new BaseResponse<TResponse>()
             {
@@ -155,7 +152,7 @@ namespace MA.BlazorRest.Src.Core
         /// <param name="httpRequestMessage"></param>
         /// <param name="cancellationToken"></param>
         /// <returns></returns>
-        protected async Task<BaseResponse> SendBaseAsync(HttpRequestMessage httpRequestMessage, CancellationToken cancellationToken = default)
+        protected async Task<BaseResponse> SendVoidAsync(HttpRequestMessage httpRequestMessage, CancellationToken cancellationToken = default)
         {
             var response = await SendAsync(httpRequestMessage, cancellationToken);
 
@@ -178,7 +175,7 @@ namespace MA.BlazorRest.Src.Core
         {
             if (message is null) throw new ArgumentNullException(nameof(message));
 
-            return HttpMessageHelper.CreateHttpRequestMessage(message, HttpClient, JsonSerializerOptions);
+            return HttpMessageHelper.CreateHttpRequestMessage(message, HttpClient);
         }
     }
 }
