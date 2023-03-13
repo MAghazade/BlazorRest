@@ -146,7 +146,16 @@ namespace MA.BlazorRest.Src
             _httpRequestMessage.Content = requestContent;
             return this;
         }
-        
+
+       public HttpRequestMessageBuilder AddHttpContent(HttpContent? content)
+       {
+            if (content is null) return this;
+
+           _httpRequestMessage.Content = content;
+           return this;
+       }
+
+
         /// <summary>
         /// 
         /// </summary>

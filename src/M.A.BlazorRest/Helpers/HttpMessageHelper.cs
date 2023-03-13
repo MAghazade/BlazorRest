@@ -62,42 +62,20 @@ namespace MA.BlazorRest.Src.Helpers
         }
 
         /// <summary>
-        /// Create HttpRequest Message
+        /// 
         /// </summary>
         /// <param name="message"></param>
+        /// <param name="httpClient"></param>
+        /// <param name="serializerOptions"></param>
         /// <returns></returns>
-        /// <exception cref="Exception"></exception>
-        public static HttpRequestMessage CreateHttpRequestMessage(IBlazorRestMessage message, HttpClient httpClient, JsonSerializerOptions serializerOptions)
+        public static HttpRequestMessage CreateHttpRequestMessage(IBlazorRestMessage message, HttpClient httpClient)
         {
             var httpRequestMessage = new HttpRequestMessageBuilder()
-               .AddUri(UriHelper.GetFinalUri(message, httpClient))
-               .AddHeaders(message.Headers)
-               .AddMethod(message.Method)
-               .AddQuery(message.QueryParmeters);
-
-            if (message.Content is JsonContent or FileContent and null)
-                throw new ArgumentException("Message Content Cannot be null !");
-
-            switch (message.Content)
-            {
-                case JsonContent messageContent:
-                    httpRequestMessage.AddJsonContent(messageContent, message.Encoding,
-                        message.SerilizerOption ?? serializerOptions);
-                    break;
-
-                case FileWithModelContent fileWithModelContent:
-                    if (fileWithModelContent.Model != null)
-                        _ = httpRequestMessage.AddFilesWithModel(fileWithModelContent.Files,
-                            model: fileWithModelContent.Model);
-                    break;
-
-                case FileContent fileContent when !fileContent.Files.Any():
-                    throw new Exception("No files were added to the request");
-
-                case FileContent fileContent:
-                    httpRequestMessage.AddFiles(fileContent.Files);
-                    break;
-            }
+                .AddUri(UriHelper.GetFinalUri(message, httpClient))
+                .AddHeaders(message.Headers)
+                .AddMethod(message.Method)
+                .AddQuery(message.QueryParmeters)
+                .AddHttpContent(message?.Content?.GetHttpContent());
 
             return httpRequestMessage.Build();
         }
