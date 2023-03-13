@@ -89,11 +89,7 @@ builder.Services.AddBlazorRest(opt =>
     opt.UseJwtService<JwtService>(); //you can implement IJwtService and use like this
     opt.UseRequestInterceptor<RequestInterceptor>();
     opt.UseResponseInterceptor<ResponseInterceptor>();
-    opt.UseErrorInterceptor<ErrorInterceptor>();
-    opt.jsonSerializerOptions = new()
-    {
-        PropertyNameCaseInsensitive = true,
-    };
+    opt.UseErrorInterceptor<ErrorInterceptor>();   
 });
 ```
 
@@ -114,9 +110,8 @@ public class AccountService : IAccountService
 
    public async Task Login(UserLoginDto loginDto)
    {
-      var message =new BlazorRestMessage("/auth/login")
-      {
-         Method = HttpMethod.Post,
+      var message =new BlazorRestMessage("/auth/login", HttpMethod.Post)
+      {     
          Content = new MA.BlazorRest.Src.RequestContents.JsonContent(loginDto)   
       };
          
@@ -137,9 +132,8 @@ public class AccountService : IAccountService
 ```cs
 public async Task UploadAvatarAsync(IBrowserFile ProfileImage)
 {
-   var message = new BlazorRestMessage("/user/avatar")
+   var message = new BlazorRestMessage("/user/avatar", HttpMethod.Post)
    { 
-      Method = HttpMethod.Post,
       Content = new FileContent(ProfileImage, "FileNameInFormData")
    };
     
@@ -151,9 +145,8 @@ public async Task UploadAvatarAsync(IBrowserFile ProfileImage)
 ```cs
 public async Task EditUserAsync(EditProfileDto editUserDto, IBrowserFile ProfileImage)
 {
-    var message = new BlazorRestMessage("/user")
+    var message = new BlazorRestMessage("/user", HttpMethod.Post)
     {
-       Method = HttpMethod.Post,
        Content = new FileWithModelContent(ProfileImage, nameof(ProfileImage), editUserDto)    
     };
     
