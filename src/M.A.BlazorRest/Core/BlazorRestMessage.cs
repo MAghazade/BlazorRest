@@ -9,14 +9,16 @@ namespace MA.BlazorRest.Src.Core
 {
     public sealed class BlazorRestMessage : IBlazorRestMessage
     {
-        public BlazorRestMessage(Uri? absoluteUrl)
+        public BlazorRestMessage(Uri? absoluteUrl,HttpMethod method)
         {
             AbsoluteUrl = absoluteUrl ?? throw new ArgumentNullException(nameof(absoluteUrl));
+            Method = method ?? throw new ArgumentNullException(nameof(method));
         }
 
-        public BlazorRestMessage(string? relativeUrl)
+        public BlazorRestMessage(string? relativeUrl, HttpMethod method)
         {
             RelativeUrl = relativeUrl ?? throw new ArgumentNullException(nameof(relativeUrl));
+            Method = method ?? throw new ArgumentNullException(nameof(method));
         }
 
         /// <summary>
@@ -37,7 +39,7 @@ namespace MA.BlazorRest.Src.Core
         /// <summary>
         /// Body Content Of Request Use In Post And Put Method
         /// </summary>
-        public RestContent Content { get; set; } = null!;
+        public IRestContent Content { get; set; } = null!;
 
         /// <summary>
         /// Serilizer Encoding type
