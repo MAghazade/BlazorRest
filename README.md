@@ -155,5 +155,46 @@ public async Task EditUserAsync(EditProfileDto editUserDto, IBrowserFile Profile
     //var result = await _blazorRest.SendAsync(message);
 }
 ```
+
+
+### Simple Get Request 
+
+```cs
+public async Task<IEnumerable<WeatherForecast>> Get()
+{
+    var result = await _blazorRest.GetAsync<WeatherForecast[]>("WeatherForecast");
+    
+    if (!result.IsSuccessful)
+    {
+      //do somthing
+    }    
+      
+    return result.Data;    
+}
+```
+
+###  Get Request with Response Options
+
+```cs
+public async Task<IEnumerable<WeatherForecast>> Get()
+{
+     var result = await _blazorRest.GetAsync<WeatherForecast[]>("WeatherForecast", new ResponseOptions
+            {
+                SerializerOptions = new System.Text.Json.JsonSerializerOptions
+                {
+                    PropertyNameCaseInsensitive = false
+                }
+            });
+    
+    if (!result.IsSuccessful)
+    {
+      //do somthing
+    }    
+      
+    return result.Data;    
+}
+```
+
+
  
 
