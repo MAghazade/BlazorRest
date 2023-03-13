@@ -1,7 +1,9 @@
-﻿using Microsoft.AspNetCore.Components.Forms;
+﻿using MA.BlazorRest.Src.Helpers;
+using Microsoft.AspNetCore.Components.Forms;
 using System;
 using System.Collections.Generic;
 using System.Net.Http;
+
 
 namespace MA.BlazorRest.Src.RequestContents
 {
@@ -20,7 +22,7 @@ namespace MA.BlazorRest.Src.RequestContents
             string fileParameterName,
             object model) : base(file, fileParameterName)
         {
-           
+
             Model = model ?? throw new ArgumentNullException(nameof(model));
         }
 
@@ -36,5 +38,11 @@ namespace MA.BlazorRest.Src.RequestContents
             Model = model ?? throw new ArgumentNullException(nameof(model));
         }
 
+        public override HttpContent GetHttpContent()
+        {
+            var requestContent = HttpMessageHelper.CreateMultiPartFormData(Files);
+            return HttpMessageHelper
+                .AddModelToFormData(Model, requestContent, "application/json");
+        }
     }
 }

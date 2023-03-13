@@ -1,11 +1,13 @@
-﻿using Microsoft.AspNetCore.Components.Forms;
+﻿using MA.BlazorRest.Src.Helpers;
+using Microsoft.AspNetCore.Components.Forms;
 using System;
 using System.Collections.Generic;
 using System.Linq;
+using System.Net.Http;
 
 namespace MA.BlazorRest.Src.RequestContents
 {
-    public class FileContent : RestContent
+    public class FileContent : IRestContent
     {
         public Dictionary<string, IBrowserFile> Files { get; private set; } = new();
 
@@ -37,6 +39,11 @@ namespace MA.BlazorRest.Src.RequestContents
                 Files = files;
             }
         }
+
+
+        public virtual HttpContent GetHttpContent()
+         => HttpMessageHelper.CreateMultiPartFormData(Files);
+
     }
 }
 
