@@ -12,13 +12,9 @@ namespace MA.BlazorRest.Src.Core
         /// <summary>
         /// Request content 
         /// </summary>
-        RestContent Content { get; set; }
+        IRestContent Content { get; set; }
 
-        /// <summary>
-        /// encoding of serialization and desreialization
-        /// </summary>
-        Encoding Encoding { get; set; }
-
+     
         /// <summary>
         /// http request headers
         /// </summary>
@@ -29,11 +25,7 @@ namespace MA.BlazorRest.Src.Core
         /// </summary>
         NameValueCollection QueryParmeters { get; set; }
 
-        /// <summary>
-        /// json  serialiaze/deserialaztion  options
-        /// </summary>
-        JsonSerializerOptions? SerilizerOption { get; set; }
-
+        
         /// <summary>
         /// full url with protocol
         /// </summary>
