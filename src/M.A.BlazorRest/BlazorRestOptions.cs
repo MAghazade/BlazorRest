@@ -13,7 +13,6 @@ namespace MA.BlazorRest.Src
         public Type? ErrorInterceptor { get; set; }
         public Type? ResponseInterceptor { get; set; }
         public Type? RequestInterceptor { get; set; }
-        public JsonSerializerOptions jsonSerializerOptions { get; set; } = new();
 
         /// <summary>
         /// 
