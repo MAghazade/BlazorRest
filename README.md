@@ -1,6 +1,4 @@
-<a href="https://www.nuget.org/packages/BlazorRest" rel="nofollow">
- <img src="https://i.ibb.co/X7t1sq3/version5.png">
- </a>
+[![NuGet Version](https://img.shields.io/nuget/v/BlazorRest?logo=nuget)](https://www.nuget.org/packages/BlazorRest)
 
 # BlazorRest
 blazor rest is a library for sending http requests in Blazor WebAssembly in the simplest way. blazorrest also gives you the ability to intercept requests, response, and errors that you can customize them.
