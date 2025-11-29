@@ -5,6 +5,8 @@ VisualStudioVersion = 17.0.31903.59
 MinimumVisualStudioVersion = 10.0.40219.1
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "BlazorRest", "src\BlazorRest.csproj", "{3C484C7B-A6F9-4188-8394-F13E35C113EF}"
 EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "BlazorRest.Tests", "tests\BlazorRest.Tests\BlazorRest.Tests.csproj", "{C1CF7ECC-AB0A-400A-9C8B-29263D6AC6BC}"
+EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
 		Debug|Any CPU = Debug|Any CPU
@@ -18,5 +20,9 @@ Global
 		{3C484C7B-A6F9-4188-8394-F13E35C113EF}.Debug|Any CPU.Build.0 = Debug|Any CPU
 		{3C484C7B-A6F9-4188-8394-F13E35C113EF}.Release|Any CPU.ActiveCfg = Release|Any CPU
 		{3C484C7B-A6F9-4188-8394-F13E35C113EF}.Release|Any CPU.Build.0 = Release|Any CPU
+		{C1CF7ECC-AB0A-400A-9C8B-29263D6AC6BC}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{C1CF7ECC-AB0A-400A-9C8B-29263D6AC6BC}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{C1CF7ECC-AB0A-400A-9C8B-29263D6AC6BC}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{C1CF7ECC-AB0A-400A-9C8B-29263D6AC6BC}.Release|Any CPU.Build.0 = Release|Any CPU
 	EndGlobalSection
 EndGlobal
