@@ -9,16 +9,19 @@ using BlazorRest.Helpers;
 
 namespace BlazorRest
 {
-    internal class BlazorRest : BaseBlazorRest, IBlazorRest
+    internal class BlazorRestClient : BaseBlazorRest, IBlazorRest
     {
-        public BlazorRest(
-                HttpClient httpClient,
-                IOptions<BlazorRestOptions> options,
-                IJwtService? jwt = default,
-                IRequestInterceptor? requestInterceptor = default,
-                IResponseInterceptor? responseInterceptor = default,
-                IErrorInterceptor? errorInterceptor = default)
-                : base(httpClient, options, jwt, requestInterceptor, responseInterceptor, errorInterceptor) { }
+        public BlazorRestClient(
+            HttpClient httpClient,
+            IOptions<BlazorRestOptions> options,
+            IRequestInterceptor requestInterceptor,
+            IResponseInterceptor responseInterceptor,
+            IErrorInterceptor errorInterceptor,
+            IJwtService? jwt = default
+        )
+            : base(httpClient, options, requestInterceptor, responseInterceptor, errorInterceptor, jwt)
+        {
+        }
 
 
         /// <summary>
@@ -43,14 +46,16 @@ namespace BlazorRest
         /// <param name="cancellationToken"></param>
         /// <returns></returns>
         /// <exception cref="ArgumentNullException"></exception>
-        public Task<BaseResponse<TResponse>> SendAsync<TResponse>(IBlazorRestMessage message, CancellationToken cancellationToken = default)
+        public Task<BaseResponse<TResponse>> SendAsync<TResponse>(IBlazorRestMessage message,
+            CancellationToken cancellationToken = default)
         {
             if (message is null) throw new ArgumentNullException(nameof(message));
 
             return SendAsync<TResponse>(CreateMessage(message), new(), cancellationToken);
         }
 
-        public Task<BaseResponse<TResponse>> SendAsync<TResponse>(IBlazorRestMessage message, ResponseOptions responseOptions,
+        public Task<BaseResponse<TResponse>> SendAsync<TResponse>(IBlazorRestMessage message,
+            ResponseOptions responseOptions,
             CancellationToken cancellationToken = default)
         {
             if (message is null) throw new ArgumentNullException(nameof(message));
@@ -68,7 +73,8 @@ namespace BlazorRest
         /// <param name="cancellationToken"></param>
         /// <returns></returns>
         /// <exception cref="ArgumentNullException"></exception>
-        public Task<BaseResponse<TResponse>> GetAsync<TResponse>(string url, CancellationToken cancellationToken = default)
+        public Task<BaseResponse<TResponse>> GetAsync<TResponse>(string url,
+            CancellationToken cancellationToken = default)
         {
             if (url is null) throw new ArgumentNullException(nameof(url));
 
@@ -84,7 +90,8 @@ namespace BlazorRest
         /// <param name="cancellationToken"></param>
         /// <returns></returns>
         /// <exception cref="ArgumentNullException"></exception>
-        public Task<BaseResponse<TResponse>> GetAsync<TResponse>(string url, ResponseOptions responseOptions, CancellationToken cancellationToken = default)
+        public Task<BaseResponse<TResponse>> GetAsync<TResponse>(string url, ResponseOptions responseOptions,
+            CancellationToken cancellationToken = default)
         {
             if (url is null) throw new ArgumentNullException(nameof(url));
 

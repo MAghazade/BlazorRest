@@ -14,6 +14,7 @@
 		<RepositoryType>git</RepositoryType>
 		<PackageIcon>icon.png</PackageIcon>
 		<PackageReadmeFile>README.md</PackageReadmeFile>
+		
 	</PropertyGroup>
 
 	<!-- Browser support -->
@@ -50,5 +51,12 @@
 		<None Include="..\README.md" Pack="true" PackagePath="\" />
 		<None Include="BlazorRest\icon.png" Pack="true" PackagePath="\" />
 	</ItemGroup>
+
+	<ItemGroup>
+		<AssemblyAttribute Include="System.Runtime.CompilerServices.InternalsVisibleTo">
+			<_Parameter1>BlazorRest.Tests</_Parameter1>
+		</AssemblyAttribute>
+	</ItemGroup>
+
 
 </Project>

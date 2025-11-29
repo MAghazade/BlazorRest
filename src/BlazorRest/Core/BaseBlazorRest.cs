@@ -1,179 +1,177 @@
 ﻿using BlazorRest.Interceptors;
 using BlazorRest.Models;
-using System.Net;
-using System.Net.Http.Headers;
-using System.Text.Json;
 using BlazorRest.Responses;
-using System.Threading.Tasks;
+using BlazorRest.Helpers;
 using System.Net.Http;
+using System.Net.Http.Headers;
 using System.Threading;
+using System.Threading.Tasks;
 using Microsoft.Extensions.Options;
 using System;
-using BlazorRest.Helpers;
 
 namespace BlazorRest
 {
-
     internal abstract class BaseBlazorRest
     {
-        protected readonly HttpClient HttpClient;
+        private readonly HttpClient _httpClient;
         private readonly IJwtService? _jwt;
-        private readonly IErrorInterceptor? _errorInterceptor;
-        private readonly IResponseInterceptor? _responseInterceptor;
-        private readonly IRequestInterceptor? _requestInterceptor;
+        private readonly IErrorInterceptor _errorInterceptor;
+        private readonly IResponseInterceptor _responseInterceptor;
+        private readonly IRequestInterceptor _requestInterceptor;
 
         protected BaseBlazorRest(
-             HttpClient httpClient,
-             IOptions<BlazorRestOptions> options,
-             IJwtService? jwt = default,
-             IRequestInterceptor? requestInterceptor = default,
-             IResponseInterceptor? responseInterceptor = default,
-            IErrorInterceptor? errorInterceptor = default)
+            HttpClient httpClient,
+            IOptions<BlazorRestOptions> options,
+            IRequestInterceptor requestInterceptor,
+            IResponseInterceptor responseInterceptor,
+            IErrorInterceptor errorInterceptor,
+            IJwtService? jwt = null
+        )
         {
-            if (options is null)
-            {
-                throw new ArgumentNullException(nameof(options));
-            }
-            HttpClient = httpClient ?? throw new ArgumentNullException(nameof(httpClient));
+            _httpClient = httpClient ?? throw new ArgumentNullException(nameof(httpClient));
+            if (options is null) throw new ArgumentNullException(nameof(options));
+
             _jwt = jwt;
+            _requestInterceptor = requestInterceptor;
             _responseInterceptor = responseInterceptor;
             _errorInterceptor = errorInterceptor;
-            _requestInterceptor = requestInterceptor;
         }
 
-
-        /// <summary>
-        ///   send http request
-        /// </summary>
-        /// <typeparam name="TResponse"></typeparam>
-        /// <param name="httpRequestMessage"></param>
-        /// <param name="responseOptions"></param>
-        /// <param name="cancellationToken"></param>
-        /// <returns></returns>
-        protected async Task<BaseResponse<TResponse>> SendAsync<TResponse>(HttpRequestMessage httpRequestMessage, ResponseOptions? responseOptions, CancellationToken cancellationToken = default)
+        protected async Task<BaseResponse<TResponse>> SendAsync<TResponse>(
+            HttpRequestMessage httpRequestMessage,
+            ResponseOptions? responseOptions = null,
+            CancellationToken cancellationToken = default)
         {
-            var response = await SendAsync(httpRequestMessage, cancellationToken);
+            string? content = null;
+            HttpResponseMessage? response = null;
 
-            if (response is null)
+            try
             {
-                return new BaseResponse<TResponse>()
+                response = await SendAsync(httpRequestMessage, cancellationToken);
+
+                if (response is null)
                 {
-                    IsSuccessful = false
+                    await _errorInterceptor.InterceptError(new ErrorInterceptorModel { Content = "response is null" });
+                    return new BaseResponse<TResponse> { IsSuccessful = false, ErrorMessage = "response is null" };
+                }
+
+                content = await response.Content.ReadAsStringAsync(cancellationToken);
+
+                if (string.IsNullOrWhiteSpace(content))
+                {
+                    await _errorInterceptor.InterceptError(new ErrorInterceptorModel
+                        { Content = "response content is null", StatusCode = response.StatusCode });
+                    return new BaseResponse<TResponse>
+                    {
+                        IsSuccessful = false, ErrorMessage = "response content is null",
+                        StatusCode = response.StatusCode
+                    };
+                }
+
+                var contentType = response.Content.Headers.ContentType?.MediaType;
+
+                var data = ResponseParser.Parse<TResponse>(
+                    content,
+                    contentType,
+                    responseOptions?.SerializerOptions
+                );
+
+                if (!response.IsSuccessStatusCode)
+                {
+                    await _errorInterceptor.InterceptError(new ErrorInterceptorModel
+                    {
+                        Content = content,
+                        StatusCode = response.StatusCode
+                    });
+                }
+
+                return new BaseResponse<TResponse>
+                {
+                    StatusCode = response.StatusCode,
+                    IsSuccessful = response.IsSuccessStatusCode,
+                    Data = data,
+                    Content = content
                 };
             }
-
-            var content = await response.Content.ReadAsStringAsync(cancellationToken);
-            var data = JsonSerializer.Deserialize<TResponse>(content, responseOptions?.SerializerOptions ?? new());
-
-
-            return new BaseResponse<TResponse>()
+            catch (Exception ex)
             {
-                StatusCode = response.StatusCode,
-                IsSuccessful = response.StatusCode == HttpStatusCode.OK,
-                Data = data,
-                Content = content
-            };
+                await _errorInterceptor.InterceptError(new ErrorInterceptorModel
+                {
+                    Exception = ex,
+                    Content = content,
+                    StatusCode = response?.StatusCode
+                });
+
+                return new BaseResponse<TResponse>
+                {
+                    IsSuccessful = false,
+                    ErrorMessage = ex.Message,
+                    Content = content,
+                    StatusCode = response?.StatusCode
+                };
+            }
         }
 
-
-        /// <summary>
-        /// send http request
-        /// </summary>
-        /// <param name="httpRequestMessage"></param>
-        /// <param name="cancellationToken"></param>
-        /// <returns></returns>
-        protected async Task<HttpResponseMessage?> SendAsync(HttpRequestMessage httpRequestMessage, CancellationToken cancellationToken = default)
+        protected async Task<HttpResponseMessage?> SendAsync(HttpRequestMessage httpRequestMessage,
+            CancellationToken cancellationToken = default)
         {
-            if (_jwt is not null)
+            if (_jwt != null)
             {
-                string? jwtToken = await _jwt.GetTokenAsync();
-
-                if (jwtToken is not null)
-                {
-                    httpRequestMessage.Headers.Authorization =
-                        new AuthenticationHeaderValue("Bearer", jwtToken);
-                }
+                var token = await _jwt.GetTokenAsync();
+                if (token != null)
+                    httpRequestMessage.Headers.Authorization = new AuthenticationHeaderValue("Bearer", token);
             }
 
-            if (_requestInterceptor is not null)
-            {
-                httpRequestMessage = _requestInterceptor.InterceptRequest(httpRequestMessage);
-            }
+            httpRequestMessage = _requestInterceptor.InterceptRequest(httpRequestMessage);
 
             HttpResponseMessage? response = null;
 
             try
             {
-                response = await HttpClient.SendAsync(httpRequestMessage, cancellationToken);
+                response = await _httpClient.SendAsync(httpRequestMessage, cancellationToken);
             }
-            catch (Exception e)
+            catch (Exception ex)
             {
-                if (_errorInterceptor is not null)
-                {
-                    await _errorInterceptor.InterceptError(new ErrorInterceptorModel
-                    {
-                        Exception = e
-                    });
-                }
-                else
-                {
-                    throw;
-                }
+                await _errorInterceptor.InterceptError(new ErrorInterceptorModel { Exception = ex });
             }
 
-            if (response is null) return response;
+            if (response == null) return null;
 
+            response = _responseInterceptor.InterceptResponse(response);
 
-            if (_responseInterceptor is not null)
+            if (!response.IsSuccessStatusCode)
             {
-                response = _responseInterceptor.InterceptResponse(response);
-            }
-
-            if (_errorInterceptor is not null)
-            {
-                if (response.StatusCode != HttpStatusCode.OK)
+                var content = await response.Content.ReadAsStringAsync(cancellationToken);
+                await _errorInterceptor.InterceptError(new ErrorInterceptorModel
                 {
-                    await _errorInterceptor.InterceptError(new ErrorInterceptorModel
-                    {
-                        Content = await response.Content.ReadAsStringAsync(cancellationToken),
-                        StatusCode = response.StatusCode
-                    });
-                }
+                    Content = content,
+                    StatusCode = response.StatusCode
+                });
             }
 
             return response;
         }
 
-        /// <summary>
-        ///  send http request
-        /// </summary>
-        /// <param name="httpRequestMessage"></param>
-        /// <param name="cancellationToken"></param>
-        /// <returns></returns>
-        protected async Task<BaseResponse> SendVoidAsync(HttpRequestMessage httpRequestMessage, CancellationToken cancellationToken = default)
+        protected async Task<BaseResponse> SendVoidAsync(HttpRequestMessage httpRequestMessage,
+            CancellationToken cancellationToken = default)
         {
             var response = await SendAsync(httpRequestMessage, cancellationToken);
+            string? content = response?.Content != null
+                ? await response.Content.ReadAsStringAsync(cancellationToken)
+                : null;
 
             return new BaseResponse
             {
-                IsSuccessful = response?.StatusCode is HttpStatusCode.OK,
+                IsSuccessful = response?.IsSuccessStatusCode ?? false,
                 StatusCode = response?.StatusCode,
-                Content = await response?.Content?.ReadAsStringAsync(cancellationToken)!,
+                Content = content
             };
         }
 
-
-        /// <summary>
-        /// Create HttpRequest Message
-        /// </summary>
-        /// <param name="message"></param>
-        /// <returns></returns>
-        /// <exception cref="Exception"></exception>
         protected HttpRequestMessage CreateMessage(IBlazorRestMessage message)
         {
             if (message is null) throw new ArgumentNullException(nameof(message));
-
-            return HttpMessageHelper.CreateHttpRequestMessage(message, HttpClient);
+            return HttpMessageHelper.CreateHttpRequestMessage(message, _httpClient);
         }
     }
 }

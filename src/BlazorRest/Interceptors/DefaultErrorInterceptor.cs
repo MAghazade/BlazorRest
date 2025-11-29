@@ -5,7 +5,7 @@ using System.Net;
 
 namespace BlazorRest.Interceptors
 {
-    internal class ErrorInterceptor : IErrorInterceptor
+    internal class DefaultErrorInterceptor : IErrorInterceptor
     {
         public Task InterceptError(ErrorInterceptorModel? error)
         {
